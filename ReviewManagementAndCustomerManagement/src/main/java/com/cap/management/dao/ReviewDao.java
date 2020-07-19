@@ -19,4 +19,10 @@ public interface ReviewDao extends JpaRepository<Review, Integer> {
 	@Query("select r from Review r where r.book.bookId=:bookId")
 	public Optional<List<Review>> getReviewByBookId(@Param("bookId") int bookId);
 	
+	@Query("select r from Review r where r.book.bookId=:bookId")
+	public Optional<Review> getReviewsByBookId(@Param("bookId") int bookId);
+	
+	@Query("select r from Review r where r.customer.emailAddress=:mailId")
+	public Optional<Review> getReviewsByCustomerId(@Param("mailId") String mailId);
+	
 }

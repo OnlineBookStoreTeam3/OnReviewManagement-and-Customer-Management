@@ -8,12 +8,17 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import com.cap.management.dao.CustomerDao;
 import com.cap.management.dao.ReviewDao;
 import com.cap.management.entities.Review;
+
 @Service
 public class ReviewServiceImpl implements ReviewService {
 	@Autowired
 	ReviewDao reviewDao;
+	
+	@Autowired
+	CustomerDao customerDao;
 
 	@Override
 	public ResponseEntity<Review> updateReview(Review review) {
@@ -46,17 +51,20 @@ public class ReviewServiceImpl implements ReviewService {
 
 	@Override
 	public String deleteReview(int reviewId) {
+		Optional<Review> review=reviewDao.findById(reviewId);
 		reviewDao.deleteById(reviewId);
+		customerDao.save(review.get().getCustomer());
 		return "review Deleted";
 	}
 
 	@Override
 	public ResponseEntity<Review> createReview(Review review) {
-		Optional<Review> reviews = reviewDao.findById(review.getReviewId());
-		if (reviews.isPresent()) {
-			review.setRating(reviews.get().getRating());
-			review.setComments(reviews.get().getComments());
-			review.setHeadline(reviews.get().getHeadline());
+		Optional<Review> orderReview = reviewDao.getReviewsByBookId(review.getBook().getBookId());
+		Optional<Review> customerReview = reviewDao.getReviewsByCustomerId(review.getCustomer().getEmailAddress());
+		if (orderReview.equals(customerReview) && orderReview.isPresent()) {
+			review.setRating(orderReview.get().getRating());
+			review.setComments(orderReview.get().getComments());
+			review.setHeadline(orderReview.get().getHeadline());
 			return new ResponseEntity<Review>(review, HttpStatus.FOUND);
 		} else {
 			return new ResponseEntity<Review>(reviewDao.save(review), HttpStatus.OK);

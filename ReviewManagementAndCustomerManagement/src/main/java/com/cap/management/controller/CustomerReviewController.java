@@ -14,6 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -37,18 +38,18 @@ public class CustomerReviewController {
 	@Autowired
 	CustomerService customerService;
 
-	static Logger logger = LoggerFactory.getLogger(CustomerReviewController.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(CustomerReviewController.class);
 
 	@PutMapping(value = "/UpdateReview", produces = "application/json")
 	public ResponseEntity<Review> updateReview(@Valid @RequestBody Review review) {
-		logger.warn("Request {}", review);
+		LOGGER.warn("Request {}", review);
 		return reviewService.updateReview(review);
 	}
 
 	@GetMapping(value = "/getReviewByMailId/{mailId}", produces = "application/json")
 	public ResponseEntity<Optional<List<Review>>> getReviewByMailId(@Valid @PathVariable String mailId) {
 		Optional<List<Review>> review = reviewService.getReviewByMailId(mailId);
-		logger.warn("Request {} ", mailId);
+		LOGGER.warn("Request {} ", mailId);
 		if (review.isPresent())
 			return new ResponseEntity<Optional<List<Review>>>(review, HttpStatus.OK);
 		return new ResponseEntity<Optional<List<Review>>>(review, HttpStatus.NOT_FOUND);
@@ -57,7 +58,7 @@ public class CustomerReviewController {
 	@GetMapping(value = "/getReviewByBookId/{bookId}", produces = "application/json")
 	public ResponseEntity<Optional<List<Review>>> getReviewByBookId(@PathVariable int bookId) {
 		Optional<List<Review>> review = reviewService.getReviewByBookId(bookId);
-		logger.warn("Request {} ", bookId);
+		LOGGER.warn("Request {} ", bookId);
 		if (review.isPresent())
 			return new ResponseEntity<Optional<List<Review>>>(review, HttpStatus.OK);
 		return new ResponseEntity<Optional<List<Review>>>(review, HttpStatus.NOT_FOUND);
@@ -70,22 +71,20 @@ public class CustomerReviewController {
 
 	@DeleteMapping("/deleteReview/{reviewId}")
 	public String deleteReview(@Valid @PathVariable int reviewId) {
-		logger.warn("Request {} ", reviewId);
+		LOGGER.warn("Request {} ", reviewId);
 		return reviewService.deleteReview(reviewId);
-
-		// return new ResponseEntity<String>(HttpStatus.OK);
 	}
 
 	@PostMapping(value = "/CreateReview", produces = "application/json")
 	public ResponseEntity<Review> createReview(@Valid @RequestBody Review review) {
-		logger.warn("Request {} ", review);
+		LOGGER.warn("Request {} ", review);
 		return reviewService.createReview(review);
 	}
 
 	@PostMapping(value = "/addCustomer", consumes = "application/json")
 	public ResponseEntity<String> addCustomerDetails(@Valid @RequestBody() Customer customer) {
 		try {
-			logger.warn("Request {}", customer);
+			LOGGER.warn("Request {}", customer);
 			customer.setRegisterDate(LocalDate.now());
 			customerService.createCustomer(customer);
 			return new ResponseEntity<String>("Customer Added", HttpStatus.OK);
@@ -98,7 +97,7 @@ public class CustomerReviewController {
 	@PutMapping(value = "/updateCustomer", consumes = "application/json")
 	public ResponseEntity<String> updateCustomer(@Valid @RequestBody() Customer customer) {
 		try {
-			logger.warn("Request {}", customer);
+			LOGGER.warn("Request {}", customer);
 			customerService.editCustomer(customer);
 			return new ResponseEntity<String>(" Customer Details updated", HttpStatus.OK);
 		} catch (Exception ex) {
@@ -109,30 +108,15 @@ public class CustomerReviewController {
 
 	@GetMapping(value = "/getCustomers", produces = "application/json")
 	public List<Customer> getCustomerDetails() {
-		try {
-			return customerService.getCustomers();
-
-		} catch (Exception ex) {
-			return null;
-		}
+		return customerService.getCustomers();
 	}
 
+	@ExceptionHandler({ SQLIntegrityConstraintViolationException.class })
 	@DeleteMapping(value = "/deleteCustomer/{emailId}", produces = "application/json")
-	public ResponseEntity<String> deleteCustomer(@PathVariable String emailId)
-			throws SQLIntegrityConstraintViolationException {
-		return customerService.deleteCustomer(emailId);
+	public ResponseEntity<String> deleteCustomer(@PathVariable String emailId) {
+		customerService.deleteCustomer(emailId);
+		return new ResponseEntity<String>("Customer deleted", HttpStatus.OK);
 
-		/*
-		 * try { logger.warn("Request {}", emailId); Optional<List<Review>> review =
-		 * customerService.deleteCustomerByReview(emailId); Optional<List<Order>> order
-		 * = customerService.getOrderByMailId(emailId); if (review != null || order !=
-		 * null) { return new ResponseEntity<String>("Customer Not Deleted",
-		 * HttpStatus.BAD_REQUEST); } return new
-		 * ResponseEntity<String>("Customer Not Deleted", HttpStatus.BAD_REQUEST); }
-		 * catch (NullPointerException s) { customerService.deleteCustomer(emailId);
-		 * 
-		 * return new ResponseEntity<String>("Customer Deleted", HttpStatus.OK); }
-		 */
 	}
 
 }

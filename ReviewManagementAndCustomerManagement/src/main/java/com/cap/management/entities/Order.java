@@ -99,4 +99,12 @@ public class Order {
 	public void setCountry(String country) {
 		this.country = country;
 	}
+
+	@Override
+	public String toString() {
+		return "Order [orderId=" + orderId + ", receipentName=" + receipentName + ", receipentPhone=" + receipentPhone
+				+ ", streetAddress=" + streetAddress + ", city=" + city + ", zipCode=" + zipCode + ", country="
+				+ country + ", customer=" + customer + "]";
+	}
+	
 }

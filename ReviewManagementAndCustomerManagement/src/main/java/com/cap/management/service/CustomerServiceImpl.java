@@ -79,7 +79,6 @@ public class CustomerServiceImpl implements CustomerService {
 
 	@Override
 	public Optional<List<Review>> deleteCustomerByReview(String emailId) {
-
 		Optional<List<Review>> rev = rService.getReviewByMailId(emailId);
 		return rev;
 

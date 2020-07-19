@@ -32,7 +32,8 @@ public class Review {
 	@JoinColumn(name = "mailId")
 	private Customer customer;
 	@Column(name = "rating")
-	@Min(1)@Max(5)
+	@Min(1)
+	@Max(5)
 	private int rating;
 	@Column(name = "headline")
 	@Size(min = 5, max = 128)
@@ -116,4 +117,3 @@ public class Review {
 				+ ", headline=" + headline + ", comments=" + comments + "]";
 	}
 }
-

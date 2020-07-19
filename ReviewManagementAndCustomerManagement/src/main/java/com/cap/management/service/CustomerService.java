@@ -1,6 +1,5 @@
 package com.cap.management.service;
 
-import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.List;
 import java.util.Optional;
 
@@ -18,13 +17,12 @@ public interface CustomerService {
 
 	public List<Customer> getCustomers();
 
-	public ResponseEntity<String> deleteCustomer(String emailId) throws SQLIntegrityConstraintViolationException;
+	public ResponseEntity<String> deleteCustomer(String emailId);
 
 	public List<Review> getReviews();
-	
-	public Optional<List<Order>> getOrderByMailId(String emailId) ;
-	
+
+	public Optional<List<Order>> getOrderByMailId(String emailId);
+
 	public Optional<List<Review>> deleteCustomerByReview(String emailId);
-	
-	
+
 }
