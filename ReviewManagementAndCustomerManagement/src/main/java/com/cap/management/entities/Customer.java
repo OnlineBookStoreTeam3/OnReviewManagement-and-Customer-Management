@@ -7,17 +7,14 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.validation.constraints.NotBlank;
 
 @Entity
 @Table(name = "customer")
-@SequenceGenerator(name = "customer_id_gen", initialValue = 10000, allocationSize = 1)
 public class Customer {
 
-	@GeneratedValue(generator = "customer_id_gen", strategy = GenerationType.SEQUENCE)
-	@Column(name = "customer_id")
+	@GeneratedValue(strategy = GenerationType.AUTO)
 	private int customerId;
 	@Column(name = "fullname")
 	private String fullName;

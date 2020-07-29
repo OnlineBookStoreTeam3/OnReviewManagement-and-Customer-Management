@@ -20,35 +20,64 @@ public class ReviewServiceImpl implements ReviewService {
 	@Autowired
 	CustomerDao customerDao;
 
+	/*
+	 * It updates the review based on the review id
+	 * 
+	 * If review is not present it returns not found status
+	 * 
+	 * It updates only Headline and comments(Rating will not be updated)
+	 */
 	@Override
 	public ResponseEntity<Review> updateReview(Review review) {
 		Optional<Review> reviews = reviewDao.findById(review.getReviewId());
 		if (!reviews.isPresent())
-			return new ResponseEntity<Review>(review, HttpStatus.NOT_FOUND);
+			return new ResponseEntity<>(review, HttpStatus.NOT_FOUND);
 		else {
 			review.setBook(reviews.get().getBook());
 			review.setCustomer(reviews.get().getCustomer());
 			review.setRating(reviews.get().getRating());
-			return new ResponseEntity<Review>(reviewDao.save(review), HttpStatus.OK);
+			return new ResponseEntity<>(reviewDao.save(review), HttpStatus.OK);
 		}
 	}
 
+	
+	/*
+	 * It fetches all the reviews based on the mail id
+	 * 
+	 * If there are no reviews made by mail id passed it will return empty
+	 */
 	@Override
 	public Optional<List<Review>> getReviewByMailId(String mailId) {
 		return reviewDao.getCustId(mailId);
 	}
 
+	/*
+	 * It fetches all the reviews based on the book id
+	 * 
+	 * If there are no reviews made on book of that book id passed it will return
+	 * empty
+	 */
 	@Override
 	public Optional<List<Review>> getReviewByBookId(int bookId) {
 		return reviewDao.getReviewByBookId(bookId);
 
 	}
-
+	
+	/*
+	 * It fetches all the reviews present
+	 * 
+	 * If there is no review at all it will return empty
+	 */
 	@Override
 	public List<Review> getReviews() {
 		return reviewDao.findAll();
 	}
 
+	/*
+	 * It will delete review based on the review id
+	 * 
+	 * It will return not found if there is no review based on the review id
+	 */
 	@Override
 	public String deleteReview(int reviewId) {
 		Optional<Review> review=reviewDao.findById(reviewId);
@@ -57,6 +86,14 @@ public class ReviewServiceImpl implements ReviewService {
 		return "review Deleted";
 	}
 
+	/*
+	 * It creates the review based on the review id
+	 * 
+	 * If it is the first review by the mail id on that book then it creates review
+	 * 
+	 * If there is already a review given by that mail id on that book it returns
+	 * found status
+	 */
 	@Override
 	public ResponseEntity<Review> createReview(Review review) {
 		Optional<Review> orderReview = reviewDao.getReviewsByBookId(review.getBook().getBookId());
@@ -65,9 +102,9 @@ public class ReviewServiceImpl implements ReviewService {
 			review.setRating(orderReview.get().getRating());
 			review.setComments(orderReview.get().getComments());
 			review.setHeadline(orderReview.get().getHeadline());
-			return new ResponseEntity<Review>(review, HttpStatus.FOUND);
+			return new ResponseEntity<>(review, HttpStatus.FOUND);
 		} else {
-			return new ResponseEntity<Review>(reviewDao.save(review), HttpStatus.OK);
+			return new ResponseEntity<>(reviewDao.save(review), HttpStatus.OK);
 		}
 	}
 }

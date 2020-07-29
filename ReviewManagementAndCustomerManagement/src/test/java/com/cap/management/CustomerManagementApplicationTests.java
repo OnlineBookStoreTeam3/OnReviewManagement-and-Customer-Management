@@ -17,7 +17,7 @@ import com.cap.management.entities.Customer;
 import com.cap.management.service.CustomerServiceImpl;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
-public class CustomerManagementApplicationTests {
+class CustomerManagementApplicationTests {
 	@Autowired
 	TestRestTemplate testRestTemplate;
 
@@ -32,64 +32,77 @@ public class CustomerManagementApplicationTests {
 	CustomerServiceImpl customerService;
 
 	@Test
-	public void testAddCustomerPositive() throws Exception {
+	void testAddCustomerPositive() throws Exception {
 		String url = "http://localhost:" + localServerPort + "/CustomerReview/addCustomer";
-		Customer customer = new Customer(100, "Mohan", "mohanvamshi@gmail.com", "mohan@143", 9676251906L,
-				"11-3-2455", "hyderabad", "India", 598764L, LocalDate.now());
+		Customer customer = new Customer(115, "Sneha", "snehaasaji@gmail.com", "sneha@780", 9676251906L, "11-3-2455",
+				"hyderabad", "India", 598764L, LocalDate.now());
 		ResponseEntity<String> response = testRestTemplate.postForEntity(url, customer, String.class);
 		Assertions.assertEquals(200, response.getStatusCodeValue());
 	}
 
 	@Test
-	public void testAddCustomerNegative() throws Exception {
-		Customer customer = new Customer(10010, null, "pravalikaa@gmail.com", "praval123", 83099572L, "13-2455",
-				"Hyderabad", "India", 598764L, LocalDate.now());
+	void testAddCustomerNegative() throws Exception {
+		Customer customer = new Customer(10013, "aaa", "kumari@gmail.com", "praval123", 83099572L, "12-21", "Hyderabad",
+				"India", 598764L, LocalDate.now());
 		Customer c = customerService.createCustomer(customer);
 		Assertions.assertEquals(c.getCustomerId(), customer.getCustomerId());
 
 	}
 
 	@Test
-	public void testUpdateCustomerPositive() throws Exception {
-		Customer customer = new Customer(100, "Pravalika", "pravalikajakka@gmail.com", "pravalika123", 8309957852L,
+	void testUpdateCustomerPositive() throws Exception {
+		Customer customer = new Customer(1004, "Krishna Vamshi", "mohanvamshi@gmail.com", "krishna@123", 8309957852L,
 				"11-3-2455", "Hyderabad", "India", 598764L, LocalDate.now());
 		Customer c = customerService.createCustomer(customer);
 		Assertions.assertEquals(c.getCustomerId(), customer.getCustomerId());
 	}
 
 	@Test
-	public void testUpdateCustomerNegative() throws Exception {
-		Customer customer = new Customer(10010, "Prav", "pravalikaa@gmail.com", "praval123", 83099572L, "13-2455",
+	void testUpdateCustomerNegative() throws Exception {
+		Customer customer = new Customer(1003, "Prav", "pravalikaa@gmail.com", "praval123", 83099572L, "13-2455",
 				"Hyderabad", "India", 598764L, LocalDate.now());
 		Customer c = customerService.createCustomer(customer);
 		Assertions.assertEquals(c.getCustomerId(), customer.getCustomerId());
 	}
 
 	@Test
-	public void testDeleteCustomerPositive() throws Exception {
-		String url = "http://localhost:" + localServerPort + "/CustomerReview/deleteCustomer/pravalikajakka@gmail.com";
+	void testDeleteCustomerPositive() throws Exception {
+		String url = "http://localhost:" + localServerPort + "/CustomerReview/deleteCustomer/snehaasaji@gmail.com";
 		ResponseEntity<String> response = testRestTemplate.exchange(url, HttpMethod.DELETE, null, String.class);
 		Assertions.assertEquals(200, response.getStatusCodeValue());
 	}
 
 	@Test
-	public void testDeleteCustomerNegative() throws Exception {
-		String url = "http://localhost:" + localServerPort + "/CustomerReview/deleteCustomer/asa@gmail.com";
+	void testDeleteCustomerNegative() throws Exception {
+		String url = "http://localhost:" + localServerPort + "/CustomerReview/deleteCustomer/kuma@gmail.com";
 		ResponseEntity<String> response = testRestTemplate.exchange(url, HttpMethod.DELETE, null, String.class);
-		Assertions.assertEquals(500, response.getStatusCodeValue());
+		Assertions.assertEquals(404, response.getStatusCodeValue());
 
-		
 	}
 
 	@Test
-	public void testGetCustomersPositive() throws Exception {
+	void testGetCustomersPositive() throws Exception {
 		List<Customer> customer = customerService.getCustomers();
 		Assertions.assertEquals(true, customer.containsAll(customer));
 	}
 
 	@Test
-	public void testGetCustomersNegative() throws Exception {
+	void testGetCustomersNegative() throws Exception {
 		List<Customer> customer = customerService.getCustomers();
 		Assertions.assertEquals(false, customer.isEmpty());
+	}
+
+	@Test
+	void testGetCustomerByMailIdPositive() throws Exception {
+		String url = "http://localhost:" + localServerPort + "/CustomerReview/getCustomer/kumari@gmail.com";
+		ResponseEntity<Customer> customer = testRestTemplate.getForEntity(url, Customer.class);
+		Assertions.assertEquals(200, customer.getStatusCodeValue());
+	}
+
+	@Test
+	void testGetCustomerByMailIdNegative() throws Exception {
+		String url = "http://localhost:" + localServerPort + "/CustomerReview/getCustomer/xyz@gmail.com";
+		ResponseEntity<Customer> customer = testRestTemplate.getForEntity(url, Customer.class);
+		Assertions.assertNotEquals(200, customer.getStatusCodeValue());
 	}
 }

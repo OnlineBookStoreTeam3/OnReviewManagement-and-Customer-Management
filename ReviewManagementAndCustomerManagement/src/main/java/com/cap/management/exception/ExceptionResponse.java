@@ -2,7 +2,7 @@ package com.cap.management.exception;
 
 import java.util.Date;
 
-public class ExceptionResponse {
+public class ExceptionResponse extends RuntimeException {
 	private Date timestamp;
 	private String message;
 	private String details;
@@ -12,7 +12,10 @@ public class ExceptionResponse {
 		this.message = message;
 		this.details = details;
 	}
-
+	public ExceptionResponse(String message){
+        super();
+        this.message=message;
+    }
 	public Date getTimestamp() {
 		return timestamp;
 	}
